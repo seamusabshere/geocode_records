@@ -8,16 +8,26 @@ Gem::Specification.new do |spec|
   spec.version       = GeocodeRecords::VERSION
   spec.authors       = ["Seamus Abshere"]
   spec.email         = ["seamus@abshere.net"]
-  spec.summary       = %q{TODO: Write a short summary. Required.}
-  spec.description   = %q{TODO: Write a longer description. Optional.}
-  spec.homepage      = ""
+  spec.summary       = %q{Geocode an ActiveRecord::Relation with node_smartystreets}
+  spec.description   = %q{A quick way to re-geocode a table}
+  spec.homepage      = "https://github.com/seamusabshere/geocode_records"
   spec.license       = "MIT"
+  spec.required_rubygems_version = '>=2.1'
+  spec.metadata = {
+    'allowed_push_host' => 'use.gemfury'
+  }
 
   spec.files         = `git ls-files -z`.split("\x0")
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
+  spec.add_runtime_dependency 'activerecord'
+  spec.add_runtime_dependency 'pg'
+  spec.add_runtime_dependency 'attr_extras'
+  spec.add_runtime_dependency 'zaru'
+  spec.add_runtime_dependency 'upsert'
+  
   spec.add_development_dependency "bundler", "~> 1.7"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec"
