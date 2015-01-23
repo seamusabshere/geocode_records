@@ -22,7 +22,7 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
-  spec.add_runtime_dependency 'activerecord'
+  spec.add_runtime_dependency 'activerecord', '~>4.1.9'
   spec.add_runtime_dependency 'pg'
   spec.add_runtime_dependency 'attr_extras'
   spec.add_runtime_dependency 'zaru'
