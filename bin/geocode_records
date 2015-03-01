@@ -17,10 +17,8 @@ logger.level = Logger::WARN
 ActiveRecord::Base.logger = logger
 Upsert.logger = logger
 
-table_name = ARGV[0]
-
-class Whatever
-  self.table_name = table_name
+class Whatever < ActiveRecord::Base
+  self.table_name = ARGV[0]
 end
 
 GeocodeRecords.new(Whatever.all).perform
