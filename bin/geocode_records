@@ -2,7 +2,6 @@
 
 require 'logger'
 
-require 'bundler/setup'
 require 'geocode_records'
 
 ActiveRecord::Base.establish_connection ENV.fetch('DATABASE_URL')
@@ -19,13 +18,9 @@ ActiveRecord::Base.logger = logger
 Upsert.logger = logger
 
 table_name = ARGV[0]
-model_name = table_name.singularize.camelcase
 
-eval <<-RUBY
-  class #{model_name} < ActiveRecord::Base
-  end
-RUBY
+class Whatever
+  self.table_name = table_name
+end
 
-model = model_name.constantize
-
-GeocodeRecords.new(model.all).perform
+GeocodeRecords.new(Whatever.all).perform
