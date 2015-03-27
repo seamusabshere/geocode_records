@@ -1,6 +1,7 @@
 require 'spec_helper'
 
 dbname = 'geocode_records_test'
+ENV['DATABASE_URL'] = "postgresql://127.0.0.1/#{dbname}"
 
 unless ENV['FAST'] == 'true'
   system 'dropdb', '--if-exists', dbname
@@ -10,7 +11,7 @@ unless ENV['FAST'] == 'true'
 end
 
 require 'active_record'
-ActiveRecord::Base.establish_connection "postgresql://127.0.0.1/#{dbname}"
+ActiveRecord::Base.establish_connection
 # http://gray.fm/2013/09/17/unknown-oid-with-rails-and-postgresql/
 require 'active_record/connection_adapters/postgresql/oid'
 ActiveRecord::ConnectionAdapters::PostgreSQLAdapter.tap do |klass|

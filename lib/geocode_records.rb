@@ -1,5 +1,6 @@
 require 'active_record'
 require 'attr_extras'
+require 'pasqual'
 
 require_relative 'geocode_records/version'
 require_relative 'geocode_records/dump_sql_to_csv'
@@ -19,7 +20,7 @@ class GeocodeRecords
   def perform
     if records.count > 0
       # $stderr.puts "GeocodeRecords: #{records.count} to go!"
-      ungeocoded_path = DumpSqlToCsv.new(database, to_sql, options).path
+      ungeocoded_path = DumpSqlToCsv.new(pasqual, to_sql, options).path
       geocoded_path = GeocodeCsv.new(ungeocoded_path, options).path
       UpdateTableFromCsv.new(connection, table_name, geocoded_path, options).perform
       set_the_geom
@@ -60,7 +61,7 @@ class GeocodeRecords
     options[:table_name] || records.engine.table_name
   end
 
-  def database
-    records.engine.connection_config[:database]
+  def pasqual
+    @pasqual ||= Pasqual.for ENV.fetch('DATABASE_URL')
   end
 end

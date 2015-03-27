@@ -27,6 +27,7 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency 'attr_extras'
   spec.add_runtime_dependency 'zaru'
   spec.add_runtime_dependency 'upsert'
+  spec.add_runtime_dependency 'pasqual'
   
   spec.add_development_dependency "bundler", "~> 1.7"
   spec.add_development_dependency "rake", "~> 10.0"

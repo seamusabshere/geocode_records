@@ -1,3 +1,9 @@
+unreleased
+
+* Enhancements
+
+  * Respect ENV['DATABASE_URL'] instead of expecting `psql DBNAME` to always work
+
 0.0.2 / 2015-01-23
 
 * Enhancements
