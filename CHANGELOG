@@ -3,6 +3,7 @@ unreleased
 * Enhancements
 
   * Respect ENV['DATABASE_URL'] instead of expecting `psql DBNAME` to always work
+  * Require a good version of https://www.npmjs.com/package/smartystreets to be installed
 
 0.0.2 / 2015-01-23
 
