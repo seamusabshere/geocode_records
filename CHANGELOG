@@ -4,6 +4,7 @@ unreleased
 
   * Respect ENV['DATABASE_URL'] instead of expecting `psql DBNAME` to always work
   * Require a good version of https://www.npmjs.com/package/smartystreets to be installed
+  * More resistant to postcodes like 5753 (aka 05753), 53703.0, and even 5753.0
 
 0.0.2 / 2015-01-23
 

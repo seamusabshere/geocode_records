@@ -48,7 +48,7 @@ class GeocodeRecords
       if glob
         c.to_sql records.select('id', 'glob').arel, records.bind_values
       else
-        c.to_sql records.select('id', 'house_number_and_street', 'house_number', 'unit_number', 'city', 'state', 'postcode').arel, records.bind_values
+        c.to_sql records.select('id', 'house_number_and_street', 'house_number', 'unit_number', 'city', 'state', "left(regexp_replace(postcode, '.0$', ''), 5) AS postcode").arel, records.bind_values
       end
     end
   end

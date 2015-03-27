@@ -32,4 +32,44 @@ describe GeocodeRecords do
     home.reload
     expect(home.house_number_and_street).to eq('1038 E Dayton St')
   end
+
+  it "doesn't break on float-format postcode" do
+    home = Home.create! house_number_and_street: '1038 e deyton st', postcode: '53703.0'
+    GeocodeRecords.new(Home.all).perform
+    home.reload
+    expect(home.house_number_and_street).to eq('1038 E Dayton St')
+  end
+
+  it "doesn't break on unzeropadded postcode" do
+    home = Home.create! house_number_and_street: '36 main st', postcode: '5753'
+    GeocodeRecords.new(Home.all).perform
+    home.reload
+    expect(home.house_number_and_street).to eq('36 Main St')
+  end
+
+  it "doesn't break on unzeropadded float-format postcode" do
+    home = Home.create! house_number_and_street: '36 main st', postcode: '5753.0'
+    GeocodeRecords.new(Home.all).perform
+    home.reload
+    expect(home.house_number_and_street).to eq('36 Main St')
+  end
+
+  describe 'known issues' do
+    it "doesn't fix float-format postcode on records that it can't geocode" do
+      home = Home.create! house_number_and_street: 'gibberish', postcode: '53703.0'
+      GeocodeRecords.new(Home.all).perform
+      home.reload
+      expect(home.house_number_and_street).to eq('gibberish')
+      expect(home.postcode).to eq('53703.0')
+    end
+
+    it "doesn't fix unzeropadded postcode on records that it can't geocode" do
+      home = Home.create! house_number_and_street: 'gibberish', postcode: '5753'
+      GeocodeRecords.new(Home.all).perform
+      home.reload
+      expect(home.house_number_and_street).to eq('gibberish')
+      expect(home.postcode).to eq('5753')
+    end
+  end
+
 end
