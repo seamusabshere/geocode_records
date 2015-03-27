@@ -12,10 +12,6 @@ Gem::Specification.new do |spec|
   spec.description   = %q{A quick way to re-geocode a table}
   spec.homepage      = "https://github.com/seamusabshere/geocode_records"
   spec.license       = "MIT"
-  spec.required_rubygems_version = '>=2.1'
-  spec.metadata = {
-    'allowed_push_host' => 'use.gemfury'
-  }
 
   spec.files         = `git ls-files -z`.split("\x0")
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
