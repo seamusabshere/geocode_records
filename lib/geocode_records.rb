@@ -18,6 +18,8 @@ class GeocodeRecords
   end
   
   def perform
+    raise "smartystreets >= 1.3.2 is required" unless SmartyStreets.compatible?
+
     if records.count > 0
       # $stderr.puts "GeocodeRecords: #{records.count} to go!"
       ungeocoded_path = DumpSqlToCsv.new(pasqual, to_sql, options).path
