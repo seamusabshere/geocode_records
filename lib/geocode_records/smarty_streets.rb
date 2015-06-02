@@ -11,9 +11,10 @@ class GeocodeRecords
     end
 
     def self.compatible?
-      output = run('-V').scan(/\A(\d+)\.(\d+)\.(\d+)/).first
-      major, minor, patch = [$1, $2, $3].map(&:to_i)
-      major >= 1 and minor >= 3 and patch >= 2
+      output = run('-V')
+      current_version = Gem::Version.new output.chomp
+      base_version = Gem::Version.new '1.3.2'
+      current_version >= base_version
     end
 
     def self.run(*args)

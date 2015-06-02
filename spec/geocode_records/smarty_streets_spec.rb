@@ -27,11 +27,11 @@ describe GeocodeRecords::SmartyStreets do
       it { is_expected.to be true }
     end
 
-    #context 'v1.5.0' do
-      #let(:version) { '1.5.0' }
+    context 'v1.5.0' do
+      let(:version) { '1.5.0' }
 
-      #it { is_expected.to be true }
-    #end
+      it { is_expected.to be true }
+    end
     
   end
 
