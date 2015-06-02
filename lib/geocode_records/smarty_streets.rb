@@ -11,13 +11,18 @@ class GeocodeRecords
     end
 
     def self.compatible?
-      output = run('-V')
+      output = run_with_output('-V')
       current_version = Gem::Version.new output.chomp
       base_version = Gem::Version.new '1.3.2'
       current_version >= base_version
     end
 
     def self.run(*args)
+      shargs = Shellwords.join(args)
+      system "#{bin_path} #{shargs}"
+    end
+    
+    def self.run_with_output(*args)
       shargs = Shellwords.join(args)
       `#{bin_path} #{shargs}`
     end

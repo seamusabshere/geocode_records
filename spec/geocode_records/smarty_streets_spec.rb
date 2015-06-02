@@ -11,7 +11,7 @@ describe GeocodeRecords::SmartyStreets do
   end
 
   describe '.compatible?' do
-    before { allow(described_class).to receive(:run).and_return("#{version}\n") }
+    before { allow(described_class).to receive(:run_with_output).and_return("#{version}\n") }
 
     subject { described_class.compatible? }
 
@@ -35,8 +35,8 @@ describe GeocodeRecords::SmartyStreets do
     
   end
 
-  describe '.run' do
-    subject { described_class.run '-V' }
+  describe '.run_with_output' do
+    subject { described_class.run_with_output '-V' }
 
     it { is_expected.to match /\d+\.\d+.\d+/ }
   end
