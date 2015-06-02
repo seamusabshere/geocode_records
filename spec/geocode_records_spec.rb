@@ -1,13 +1,28 @@
 require 'spec_helper'
 
 dbname = 'geocode_records_test'
-ENV['DATABASE_URL'] = "postgresql://127.0.0.1/#{dbname}"
+ENV['DATABASE_URL'] ||= "postgresql://127.0.0.1/#{dbname}"
 
 unless ENV['FAST'] == 'true'
-  system 'dropdb', '--if-exists', dbname
-  system 'createdb', dbname
-  system 'psql', dbname, '--command', 'CREATE EXTENSION postgis'
-  system 'psql', dbname, '--command', 'CREATE TABLE homes (id serial primary key, the_geom geometry(Geometry,4326), the_geom_webmercator geometry(Geometry,3857), house_number_and_street text, house_number int, unit_number text, city text, state text, postcode text, latitude float, longitude float)'
+  psql = Pasqual.for ENV['DATABASE_URL']
+  psql.dropdb rescue nil
+  psql.createdb
+  psql.command 'CREATE EXTENSION postgis'
+  psql.command <<-SQL
+  CREATE TABLE homes (
+    id serial primary key,
+    the_geom geometry(Geometry,4326),
+    the_geom_webmercator geometry(Geometry,3857),
+    house_number_and_street text,
+    house_number int,
+    unit_number text,
+    city text,
+    state text,
+    postcode text,
+    latitude float,
+    longitude float
+  )
+  SQL
 end
 
 require 'active_record'

@@ -6,6 +6,7 @@ require_relative 'geocode_records/version'
 require_relative 'geocode_records/dump_sql_to_csv'
 require_relative 'geocode_records/geocode_csv'
 require_relative 'geocode_records/update_table_from_csv'
+require_relative 'geocode_records/smarty_streets'
 
 class GeocodeRecords
 
@@ -18,6 +19,8 @@ class GeocodeRecords
   end
   
   def perform
+    raise "smartystreets >= 1.3.2 is required" unless SmartyStreets.compatible?
+
     if records.count > 0
       # $stderr.puts "GeocodeRecords: #{records.count} to go!"
       ungeocoded_path = DumpSqlToCsv.new(pasqual, to_sql, options).path
