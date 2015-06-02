@@ -1,3 +1,9 @@
+0.0.4 / 2015-06-02
+
+* Enhancements
+
+  * Depend on new fixed version of smartystreets geocoder module
+
 0.0.3 / 2015-03-27
 
 * Enhancements
