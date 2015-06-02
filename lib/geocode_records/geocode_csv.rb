@@ -46,7 +46,6 @@ class GeocodeRecords
     def geocode
       @geocoded_path = Dir::Tmpname.create(Zaru.sanitize!(input_path + '.geocode')) {}
       args = [
-        smartystreets_bin_path,
         '-i', input_path,
         '-o', geocoded_path,
         '--auth-id', ENV.fetch('SMARTY_STREETS_AUTH_ID'),
@@ -55,8 +54,7 @@ class GeocodeRecords
       input_map.each do |ss, local|
         args += [ "--#{ss}-col", local.to_s ]
       end
-      puts Shellwords.join(args)
-      system(*args)
+      SmartyStreets.run *args
       raise "Geocoding failed on #{input_path.inspect} with args #{Shellwords.join(args)}" unless $?.success?
     end
 
@@ -90,22 +88,6 @@ class GeocodeRecords
     def recode_columns
       @recode_columns ||= output_columns.map do |output_k|
         RECODE_MAP[output_k] || output_k
-      end
-    end
-
-    def smartystreets_bin_path
-      @smartystreets_bin_path ||= begin
-        memo = if File.exist?('node_modules/.bin/smartystreets')
-          'node_modules/.bin/smartystreets'
-        else
-          'smartystreets'
-        end
-        `#{memo} -V` =~ /\A(\d+)\.(\d+)\.(\d+)/
-        major, minor, patch = [$1, $2, $3].map(&:to_i)
-        unless major >= 1 and minor >= 3 and patch >= 2
-          raise "smartystreets >= 1.3.2 required, got #{major}.#{minor}.#{patch}"
-        end
-        memo
       end
     end
   end
