@@ -2,6 +2,6 @@
   "name": "rolodeck",
   "private": true,
   "dependencies": {
-    "smartystreets": "^1.3.2"
+    "smartystreets": "^1.5.0"
   }
 }
