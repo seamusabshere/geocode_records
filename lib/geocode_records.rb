@@ -6,6 +6,7 @@ require_relative 'geocode_records/version'
 require_relative 'geocode_records/dump_sql_to_csv'
 require_relative 'geocode_records/geocode_csv'
 require_relative 'geocode_records/update_table_from_csv'
+require_relative 'geocode_records/smarty_streets'
 
 class GeocodeRecords
 

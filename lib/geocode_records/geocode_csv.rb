@@ -4,6 +4,8 @@ require 'csv'
 require 'shellwords'
 require 'zaru'
 
+require 'geocode_records/smarty_streets'
+
 # copied from hotdog/app/services/file_geocoder.rb with seamus variations
 class GeocodeRecords
   class GeocodeCsv
