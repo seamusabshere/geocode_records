@@ -23,6 +23,22 @@ unless ENV['FAST'] == 'true'
     longitude float
   )
   SQL
+  psql.command <<-SQL
+  CREATE TABLE glob_homes (
+    id serial primary key,
+    glob text,
+    the_geom geometry(Geometry,4326),
+    the_geom_webmercator geometry(Geometry,3857),
+    house_number_and_street text,
+    house_number int,
+    unit_number text,
+    city text,
+    state text,
+    postcode text,
+    latitude float,
+    longitude float
+  )
+  SQL
 end
 
 require 'active_record'
@@ -35,6 +51,8 @@ end
 
 class Home < ActiveRecord::Base
 end
+class GlobHome < ActiveRecord::Base
+end
 
 describe GeocodeRecords do
   it 'has a version number' do
@@ -46,6 +64,14 @@ describe GeocodeRecords do
     GeocodeRecords.new(Home.all).perform
     home.reload
     expect(home.house_number_and_street).to eq('1038 E Dayton St')
+  end
+
+  it "geocodes an AR::Relation with just a glob" do
+    home = GlobHome.create! glob: '1038 e dayton st, madison, wi 53703'
+    GeocodeRecords.new(GlobHome.all, glob: true).perform
+    home.reload
+    expect(home.house_number_and_street).to eq('1038 E Dayton St')
+    expect(home.postcode).to eq('53703')
   end
 
   it "doesn't break on float-format postcode" do

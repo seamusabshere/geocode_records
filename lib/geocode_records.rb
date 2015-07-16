@@ -19,7 +19,7 @@ class GeocodeRecords
   end
   
   def perform
-    raise "smartystreets >= 1.5.0 is required" unless SmartyStreets.compatible?
+    SmartyStreets.check_compatible!
 
     if records.count > 0
       # $stderr.puts "GeocodeRecords: #{records.count} to go!"

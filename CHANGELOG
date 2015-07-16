@@ -1,3 +1,9 @@
+0.0.5 / 2015-07-16
+
+* Enhancements
+
+  * Can now do single-line addresses with glob: true
+
 0.0.4 / 2015-06-02
 
 * Enhancements
