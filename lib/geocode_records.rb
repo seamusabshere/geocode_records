@@ -1,4 +1,6 @@
 require 'active_record'
+require 'active_support'
+require 'active_support/core_ext'
 require 'attr_extras'
 require 'pasqual'
 
@@ -14,7 +16,7 @@ class GeocodeRecords
   attr_reader :options
   def initialize(records, options = {})
     records.is_a?(ActiveRecord::Relation) or raise(ArgumentError, "expected AR::Relation, got #{records.class}")
-    @options = options || {}
+    @options = (options || {}).symbolize_keys
     @records = records
   end
   

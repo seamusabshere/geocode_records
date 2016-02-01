@@ -19,6 +19,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_runtime_dependency 'activerecord', '~>4.1.9'
+  spec.add_runtime_dependency 'activesupport'
   spec.add_runtime_dependency 'pg'
   spec.add_runtime_dependency 'attr_extras'
   spec.add_runtime_dependency 'zaru'

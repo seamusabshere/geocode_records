@@ -21,8 +21,8 @@ describe GeocodeRecords::SmartyStreets do
       it { is_expected.to be false }
     end
 
-    context 'v1.6.2' do
-      let(:version) { '1.6.2' }
+    context 'v1.7.2' do
+      let(:version) { '1.7.2' }
 
       it { is_expected.to be true }
     end

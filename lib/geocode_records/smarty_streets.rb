@@ -2,7 +2,7 @@ class GeocodeRecords
 
   module SmartyStreets
 
-    VERSION = '1.6.2'
+    VERSION = '1.7.2'
 
     def self.bin_path
       @bin_path ||= if File.exist?('node_modules/.bin/smartystreets')

@@ -10,11 +10,13 @@ require 'geocode_records/smarty_streets'
 class GeocodeRecords
   class GeocodeCsv
     attr_reader :glob
+    attr_reader :include_invalid
 
     def initialize(input_path, options = {})
       @input_path = input_path
       options ||= {}
       @glob = options[:glob]
+      @include_invalid = options[:include_invalid]
       @mutex = Mutex.new
     end
 
@@ -53,6 +55,9 @@ class GeocodeRecords
         '--auth-id', ENV.fetch('SMARTY_STREETS_AUTH_ID'),
         '--auth-token', ENV.fetch('SMARTY_STREETS_AUTH_TOKEN')
       ]
+      if include_invalid
+        args += [ '--include-invalid' ]
+      end
       input_map.each do |ss, local|
         args += [ "--#{ss}-col", local.to_s ]
       end

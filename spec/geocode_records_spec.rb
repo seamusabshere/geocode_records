@@ -104,6 +104,13 @@ describe GeocodeRecords do
     expect(home.house_number_and_street).to eq('1038 E Dayton St')
   end
 
+  it "allows invalid" do
+    home = Home.create! house_number_and_street: '1039 e dayton st', city: 'madison', state: 'wisconsin'
+    GeocodeRecords.new(Home.all, include_invalid: true).perform
+    home.reload
+    expect(home.house_number_and_street).to eq('1039 E Dayton St')
+  end
+
   describe 'known issues' do
     it "doesn't fix float-format postcode on records that it can't geocode" do
       home = Home.create! house_number_and_street: 'gibberish', postcode: '53703.0'
