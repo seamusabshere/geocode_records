@@ -1,3 +1,9 @@
+unreleased
+
+* Enhancements
+
+  * Don't preemptively chop off postcode after 5 chars
+
 0.0.5 / 2015-07-16
 
 * Enhancements

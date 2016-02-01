@@ -90,6 +90,20 @@ describe GeocodeRecords do
     expect(home.house_number_and_street).to eq('36 Main St')
   end
 
+  it "doesn't break on zip-4" do
+    home = Home.create! house_number_and_street: '1038 e dayton st', postcode: '53703-2428'
+    GeocodeRecords.new(Home.all).perform
+    home.reload
+    expect(home.house_number_and_street).to eq('1038 E Dayton St')
+  end
+
+  it "accepts city and state only" do
+    home = Home.create! house_number_and_street: '1038 e dayton st', city: 'madison', state: 'wisconsin'
+    GeocodeRecords.new(Home.all).perform
+    home.reload
+    expect(home.house_number_and_street).to eq('1038 E Dayton St')
+  end
+
   describe 'known issues' do
     it "doesn't fix float-format postcode on records that it can't geocode" do
       home = Home.create! house_number_and_street: 'gibberish', postcode: '53703.0'
