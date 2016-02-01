@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 dbname = 'geocode_records_test'
-ENV['DATABASE_URL'] ||= "postgresql://127.0.0.1/#{dbname}"
+ENV['DATABASE_URL'] = "postgresql://127.0.0.1/#{dbname}"
 
 unless ENV['FAST'] == 'true'
   psql = Pasqual.for ENV['DATABASE_URL']
