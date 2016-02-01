@@ -43,11 +43,6 @@ end
 
 require 'active_record'
 ActiveRecord::Base.establish_connection
-# http://gray.fm/2013/09/17/unknown-oid-with-rails-and-postgresql/
-require 'active_record/connection_adapters/postgresql/oid'
-ActiveRecord::ConnectionAdapters::PostgreSQLAdapter.tap do |klass|
-  klass::OID.register_type('geometry', klass::OID::Identity.new)
-end
 
 class Home < ActiveRecord::Base
 end

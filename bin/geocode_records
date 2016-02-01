@@ -6,12 +6,6 @@ require 'geocode_records'
 
 ActiveRecord::Base.establish_connection ENV.fetch('DATABASE_URL')
 
-# http://gray.fm/2013/09/17/unknown-oid-with-rails-and-postgresql/
-require 'active_record/connection_adapters/postgresql/oid'
-ActiveRecord::ConnectionAdapters::PostgreSQLAdapter.tap do |klass|
-  klass::OID.register_type('geometry', klass::OID::Identity.new)
-end
-
 logger = Logger.new($stderr)
 logger.level = Logger::WARN
 ActiveRecord::Base.logger = logger
