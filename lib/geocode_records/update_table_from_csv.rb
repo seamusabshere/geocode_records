@@ -19,6 +19,9 @@ class GeocodeRecords
         if hn = row['house_number']
           row['house_number'] = hn.to_i
         end
+        if default_city = row.delete('default_city')
+          row['city'] = default_city
+        end
         selector = { id: row.delete('id') }
         setter = row
         upsert.row selector, setter

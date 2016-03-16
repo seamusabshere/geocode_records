@@ -111,6 +111,20 @@ describe GeocodeRecords do
     expect(home.house_number_and_street).to eq('1039 E Dayton St')
   end
 
+  it "overwrites unit" do
+    home = Home.create! house_number_and_street: '123 n blount st apt 403', city: 'madison', state: 'wisconsin'
+    GeocodeRecords.new(Home.all, include_invalid: true).perform
+    home.reload
+    expect(home.house_number_and_street).to eq('123 N Blount St Unit 403')
+  end
+
+  it "overwrites city name with default_city_name" do
+    home = Home.create! house_number_and_street: '7333 Bay Bridge Rd', city: 'eastvale', state: 'ca'
+    GeocodeRecords.new(Home.all, include_invalid: true).perform
+    home.reload
+    expect(home.city).to eq('Corona')
+  end
+
   describe 'known issues' do
     it "doesn't fix float-format postcode on records that it can't geocode" do
       home = Home.create! house_number_and_street: 'gibberish', postcode: '53703.0'

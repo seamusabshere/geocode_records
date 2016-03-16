@@ -90,6 +90,7 @@ class GeocodeRecords
       'postcode' => 'ss_zipcode',
       'latitude' => 'ss_latitude',
       'longitude' => 'ss_longitude',
+      'default_city' => 'ss_default_city_name',
     }.freeze
 
     def recode_columns
