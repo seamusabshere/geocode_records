@@ -13,3 +13,4 @@
 *.a
 mkmf.log
 /node_modules/
+log/*

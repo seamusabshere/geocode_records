@@ -44,6 +44,12 @@ end
 require 'active_record'
 ActiveRecord::Base.establish_connection
 
+require 'logger'
+require 'fileutils'
+FileUtils.mkdir_p 'log'
+logger = Logger.new 'log/test.log'
+ActiveRecord::Base.logger = logger
+
 class Home < ActiveRecord::Base
 end
 class GlobHome < ActiveRecord::Base
