@@ -51,9 +51,9 @@ class GeocodeRecords
     c = connection
     c.unprepared_statement do
       if glob
-        c.to_sql records.select('id', 'glob').arel, records.bind_values
+        c.to_sql records.select('id', 'glob').where.not(glob: nil).arel, records.bind_values
       else
-        c.to_sql records.select('id', 'house_number_and_street', 'house_number', 'unit_number', 'city', 'state', "regexp_replace(postcode, '.0$', '') AS postcode").arel, records.bind_values
+        c.to_sql records.select('id', 'house_number_and_street', 'house_number', 'unit_number', 'city', 'state', "regexp_replace(postcode, '.0$', '') AS postcode").where('city IS NOT NULL OR postcode IS NOT NULL').arel, records.bind_values
       end
     end
   end

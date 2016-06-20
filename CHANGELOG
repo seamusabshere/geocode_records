@@ -1,3 +1,9 @@
+0.1.3 / 2016-06-20
+
+* Enhancements
+
+  * Don't even try to dump/geocode lines without city/postcode or glob
+
 0.1.2 / 2016-03-16
 
 * Enhancements
