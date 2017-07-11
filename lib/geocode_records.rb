@@ -63,7 +63,12 @@ class GeocodeRecords
   end
 
   def table_name
-    options[:table_name] || records.engine.table_name
+    @table_name = begin
+      memo = options[:table_name]
+      memo ||= records.table_name if records.respond_to?(:table_name)
+      memo ||= records.engine.table_name
+      memo
+    end
   end
 
   def pasqual
