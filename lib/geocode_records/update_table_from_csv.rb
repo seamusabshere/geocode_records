@@ -3,6 +3,7 @@ require 'upsert'
 
 class GeocodeRecords
   class UpdateTableFromCsv
+    MAX_INT = 2**31 - 1
     attr_private :connection
     attr_private :table_name
     attr_private :csv_path
@@ -18,6 +19,7 @@ class GeocodeRecords
         row = row.to_hash
         if hn = row['house_number']
           row['house_number'] = hn.to_i
+          next if row['house_number'] > MAX_INT
         end
         if default_city = row.delete('default_city')
           row['city'] = default_city
