@@ -1,31 +1,7 @@
 # GeocodeRecords
 
-TODO: Write a gem description
+As long as you do very specific things... quickly re-geocode tables.
 
-## Installation
+## Copyright
 
-Add this line to your application's Gemfile:
-
-```ruby
-gem 'geocode_records'
-```
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install geocode_records
-
-## Usage
-
-TODO: Write usage instructions here
-
-## Contributing
-
-1. Fork it ( https://github.com/[my-github-username]/geocode_records/fork )
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create a new Pull Request
+Copyright 2018 Seamus Abshere

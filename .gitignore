@@ -14,3 +14,4 @@
 mkmf.log
 /node_modules/
 log/*
+package-lock.json

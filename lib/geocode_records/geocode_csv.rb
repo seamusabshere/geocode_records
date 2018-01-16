@@ -1,40 +1,61 @@
-require 'tmpdir'
-require 'fileutils'
-require 'csv'
-require 'shellwords'
-require 'zaru'
+require 'json'
 
-require 'geocode_records/smarty_streets'
-
-# copied from hotdog/app/services/file_geocoder.rb with seamus variations
 class GeocodeRecords
   class GeocodeCsv
+    attr_reader :path
     attr_reader :glob
     attr_reader :include_invalid
 
-    def initialize(input_path, options = {})
-      @input_path = input_path
-      options ||= {}
-      @glob = options[:glob]
-      @include_invalid = options[:include_invalid]
-      @mutex = Mutex.new
+    REQUIRED_SMARTYSTREETS_VERSION = Gem::Version.new('1.8.2')
+    COLUMN_DEFINITION = {
+      delivery_line_1: true,
+      components: {
+        primary_number: true,
+        secondary_number: true,
+        city_name: true,
+        default_city_name: true,
+        state_abbreviation: true,
+        zipcode: true
+      },
+      metadata: {
+        latitude: true,
+        longitude: true
+      }
+    }
+
+    def initialize(
+      path:,
+      glob:,
+      include_invalid:
+    )
+      @path = path
+      @glob = glob
+      @include_invalid = include_invalid
     end
 
-    def path
-      return if @path
-      @mutex.synchronize do
-        return if @path
-        geocode
-        recode
-        @path = @recoded_path
+    def perform
+      return unless File.size(path) > 32
+      memo = GeocodeRecords.new_tmp_path File.basename("geocoded-#{path}")
+      args = [
+        smartystreets_bin_path,
+        '-i', path,
+        '-o', memo,
+        '--quiet',
+        '--auth-id', ENV.fetch('SMARTY_STREETS_AUTH_ID'),
+        '--auth-token', ENV.fetch('SMARTY_STREETS_AUTH_TOKEN'),
+        '--column-definition', JSON.dump(COLUMN_DEFINITION),
+      ]
+      if include_invalid
+        args += [ '--include-invalid' ]
       end
+      input_map.each do |ss, local|
+        args += [ "--#{ss}-col", local.to_s ]
+      end
+      GeocodeRecords.system(*args)
+      memo
     end
 
     private
-
-    attr_private :input_path
-    attr_private :geocoded_path
-    attr_private :recoded_path
 
     def input_map
       @input_map ||= if glob
@@ -47,55 +68,18 @@ class GeocodeRecords
       end
     end
 
-    def geocode
-      @geocoded_path = Dir::Tmpname.create(Zaru.sanitize!(input_path + '.geocode')) {}
-      args = [
-        '-i', input_path,
-        '-o', geocoded_path,
-        '--auth-id', ENV.fetch('SMARTY_STREETS_AUTH_ID'),
-        '--auth-token', ENV.fetch('SMARTY_STREETS_AUTH_TOKEN')
-      ]
-      if include_invalid
-        args += [ '--include-invalid' ]
-      end
-      input_map.each do |ss, local|
-        args += [ "--#{ss}-col", local.to_s ]
-      end
-      SmartyStreets.run *args
-      raise "Geocoding failed on #{input_path.inspect} with args #{Shellwords.join(args)}" unless $?.success?
-    end
-
-    def recode
-      @recoded_path = Dir::Tmpname.create(Zaru.sanitize!(input_path + '.recode')) {}
-      File.open(@recoded_path, 'w') do |f|
-        f.write output_columns.to_csv
-        CSV.foreach(@geocoded_path, headers: true) do |geocoded_row|
-          f.write recode_columns.map { |k| geocoded_row[k] }.to_csv
+    def smartystreets_bin_path
+      @smartystreets_bin_path ||= begin
+        memo = [
+          'node_modules/.bin/smartystreets',
+          `which smartystreets`.chomp
+        ].compact.detect do |path|
+          File.exist? path
         end
-      end
-      File.unlink @geocoded_path
-    end
-
-    def output_columns
-      @output_columns ||= (File.open(input_path) { |f| CSV.parse_line(f.gets) } + RECODE_MAP.keys).uniq
-    end
-
-    # no street yet - street_name, street_suffix
-    RECODE_MAP = {
-      'house_number_and_street' => 'ss_delivery_line_1',
-      'house_number' => 'ss_primary_number',
-      'unit_number' => 'ss_secondary_number',
-      'city' => 'ss_city_name',
-      'state' => 'ss_state_abbreviation',
-      'postcode' => 'ss_zipcode',
-      'latitude' => 'ss_latitude',
-      'longitude' => 'ss_longitude',
-      'default_city' => 'ss_default_city_name',
-    }.freeze
-
-    def recode_columns
-      @recode_columns ||= output_columns.map do |output_k|
-        RECODE_MAP[output_k] || output_k
+        raise "can't find smartystreets bin" unless memo
+        version = Gem::Version.new `#{memo} -V`.chomp
+        raise "smartystreets #{version} too old" unless version >= REQUIRED_SMARTYSTREETS_VERSION
+        memo
       end
     end
   end

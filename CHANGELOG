@@ -1,3 +1,16 @@
+1.0.0 / 2018-01-16
+
+* Breaking changes
+
+  * Totally change the API
+  * Require smartystreets 1.8.2
+  * Require pgloader to be in your path
+  * Require psql to be in your path
+
+* Enhancements
+
+  * Way faster for big files
+
 0.1.5 / 2017-10-15
 
 * Enhancements

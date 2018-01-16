@@ -1,77 +1,95 @@
-require 'active_record'
 require 'active_support'
 require 'active_support/core_ext'
-require 'attr_extras'
-require 'pasqual'
+require 'tmpdir'
+require 'shellwords'
+require 'fileutils'
 
 require_relative 'geocode_records/version'
 require_relative 'geocode_records/dump_sql_to_csv'
 require_relative 'geocode_records/geocode_csv'
 require_relative 'geocode_records/update_table_from_csv'
-require_relative 'geocode_records/smarty_streets'
 
 class GeocodeRecords
+  class << self
+    def new_tmp_path(hint)
+      Dir::Tmpname.create(hint[0,64].delete('"').gsub(/\W/,'_').squeeze) {}
+    end
 
-  attr_reader :records
-  attr_reader :options
-  def initialize(records, options = {})
-    records.is_a?(ActiveRecord::Relation) or raise(ArgumentError, "expected AR::Relation, got #{records.class}")
-    @options = (options || {}).symbolize_keys
-    @records = records
+    def system(*args)
+      result = Kernel.system(*args)
+      unless result
+        raise "failed command:\n#{Shellwords.join args}"
+      end
+      nil
+    end
+
+    def run_sql(database_url, sql)
+      system(
+        'psql',
+        database_url,
+        '-v', 'ON_ERROR_STOP=on',
+        # '--echo-all',
+        '--quiet',
+        '--no-psqlrc',
+        '--pset', 'pager=off',
+        '--command', sql
+      )
+    end
+  end
+
+  attr_reader :database_url
+  attr_reader :table_name
+
+  # optional
+  attr_reader :include_invalid
+  attr_reader :subquery
+
+   def initialize(
+    database_url:,
+    table_name:,
+    subquery: nil,
+    include_invalid: nil
+  )
+    @database_url = database_url
+    @table_name = table_name
+    @subquery = subquery
+    @include_invalid = include_invalid
   end
   
   def perform
-    SmartyStreets.check_compatible!
-
-    if records.count > 0
-      # $stderr.puts "GeocodeRecords: #{records.count} to go!"
-      ungeocoded_path = DumpSqlToCsv.new(pasqual, to_sql, options).path
-      geocoded_path = GeocodeCsv.new(ungeocoded_path, options).path
-      UpdateTableFromCsv.new(connection, table_name, geocoded_path, options).perform
-      set_the_geom
-      File.unlink geocoded_path
-      File.unlink ungeocoded_path
-    end
+    geocode glob: false
+    geocode glob: true
   end
 
   private
 
-  def glob
-    !!options[:glob]
-  end
-
-  def set_the_geom
-    records.update_all <<-SQL
-      the_geom              = ST_SetSRID(ST_MakePoint(longitude, latitude), 4326),
-      the_geom_webmercator  = ST_Transform(ST_SetSRID(ST_MakePoint(longitude, latitude), 4326), 3857)
-    SQL
-  end
-
-  def to_sql
-    c = connection
-    c.unprepared_statement do
-      if glob
-        c.to_sql records.select('id', 'glob').where.not(glob: nil).arel, records.bind_values
-      else
-        c.to_sql records.select('id', 'house_number_and_street', 'house_number', 'unit_number', 'city', 'state', "regexp_replace(postcode, '.0$', '') AS postcode").where('city IS NOT NULL OR postcode IS NOT NULL').arel, records.bind_values
+  def geocode(glob:)
+    ungeocoded_path = nil
+    geocoded_path = nil
+    begin
+      ungeocoded_path = DumpSqlToCsv.new(
+        database_url: database_url,
+        table_name: table_name,
+        subquery: subquery,
+        glob: glob
+      ).perform
+      unless File.size(ungeocoded_path) > 32
+        $stderr.puts "No records found for #{table_name} #{subquery}, skipping"
+        return
       end
+      geocoded_path = GeocodeCsv.new(
+        path: ungeocoded_path,
+        glob: glob,
+        include_invalid: include_invalid
+      ).perform
+      UpdateTableFromCsv.new(
+        database_url: database_url,
+        table_name: table_name,
+        path: geocoded_path
+      ).perform
+    ensure
+      FileUtils.rm_f geocoded_path if geocoded_path
+      FileUtils.rm_f ungeocoded_path if ungeocoded_path
     end
-  end
-
-  def connection
-    records.connection
-  end
-
-  def table_name
-    @table_name = begin
-      memo = options[:table_name]
-      memo ||= records.table_name if records.respond_to?(:table_name)
-      memo ||= records.engine.table_name
-      memo
-    end
-  end
-
-  def pasqual
-    @pasqual ||= Pasqual.for ENV.fetch('DATABASE_URL')
   end
 end
