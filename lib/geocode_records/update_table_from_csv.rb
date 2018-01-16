@@ -87,7 +87,7 @@ class GeocodeRecords
     end
 
     def create_tmp_table
-      memo = "geocode_records_#{table_name}_#{rand(999999)}"
+      memo = "geocode_records_#{table_name}_#{rand(999999)}".gsub(/[^a-z0-9_]/i, '')
       GeocodeRecords.run_sql(
         database_url,
         CREATE_TABLE_SQL.sub('$TMP_TABLE_NAME', memo)

@@ -1,3 +1,9 @@
+1.0.1 / 2018-01-16
+
+* Enhancements
+
+  * Don't die on quoted table names
+
 1.0.0 / 2018-01-16
 
 * Breaking changes

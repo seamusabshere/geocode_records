@@ -10,6 +10,13 @@ describe GeocodeRecords do
     expect(home.house_number_and_street).to eq('1038 E Dayton St')
   end
 
+  it "geocodes quoted table name" do
+    home = Home.create! house_number_and_street: '1038 e deyton st', postcode: '53703'
+    GeocodeRecords.new(database_url: ENV.fetch('DATABASE_URL'), table_name: '"homes"').perform
+    home.reload
+    expect(home.house_number_and_street).to eq('1038 E Dayton St')
+  end
+
   it "geocodes glob" do
     home = Home.create! glob: '1038 e dayton st, madison, wi 53703'
     subject
