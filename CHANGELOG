@@ -1,3 +1,13 @@
+1.1.0 / 2018-01-16
+
+* Breaking changes
+
+  * Require xsv
+
+* Enhancements
+
+  * Remove pgloader, which was hard to build on alpine
+
 1.0.1 / 2018-01-16
 
 * Enhancements

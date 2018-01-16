@@ -23,7 +23,7 @@ class GeocodeRecords
       nil
     end
 
-    def run_sql(database_url, sql)
+    def psql(database_url, sql)
       system(
         'psql',
         database_url,

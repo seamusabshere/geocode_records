@@ -18,7 +18,7 @@ class GeocodeRecords
 
     def perform
       memo = GeocodeRecords.new_tmp_path(subquery || table_name)
-      GeocodeRecords.run_sql(
+      GeocodeRecords.psql(
         database_url,
         "\\copy (#{sql}) TO '#{memo}' DELIMITER ',' CSV HEADER" 
       )
