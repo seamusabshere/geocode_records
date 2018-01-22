@@ -1,3 +1,10 @@
+1.1.1 / 2018-01-22
+
+* Enhancements
+
+  * Remove non-working binary
+  * Remove debug warning when it doesn't find records for a glob
+
 1.1.0 / 2018-01-16
 
 * Breaking changes

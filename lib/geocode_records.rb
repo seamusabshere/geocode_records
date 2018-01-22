@@ -74,7 +74,6 @@ class GeocodeRecords
         glob: glob
       ).perform
       unless File.size(ungeocoded_path) > 32
-        $stderr.puts "No records found for #{table_name} #{subquery}, skipping"
         return
       end
       geocoded_path = GeocodeCsv.new(
