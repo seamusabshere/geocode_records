@@ -34,7 +34,14 @@ class GeocodeRecords
       UPDATE $TABLE_NAME AS target
       SET
         house_number_and_street = src.ss_delivery_line_1,
-        house_number = CASE WHEN LENGTH(src.ss_primary_number) > 7 THEN NULL ELSE src.ss_primary_number::int END,
+        house_number = CASE
+          WHEN src.ss_primary_number IS NULL THEN NULL
+          WHEN LENGTH(src.ss_primary_number) > 8 THEN NULL
+          WHEN src.ss_primary_number ~ '\\A\\d+\\Z' THEN src.ss_primary_number::int
+          WHEN src.ss_primary_number ~ '/' THEN (regexp_matches(src.ss_primary_number, '(\\d+)'))[1]::int
+          WHEN src.ss_primary_number ~ '-' THEN (SELECT ROUND(AVG(v)) FROM unnest(array_remove(regexp_split_to_array(src.ss_primary_number, '\\D+'), '')::int[]) v)
+          ELSE (regexp_matches(src.ss_primary_number, '(\\d+)'))[1]::int
+        END,
         unit_number = src.ss_secondary_number,
         city = COALESCE(src.ss_default_city_name, src.ss_city_name),
         state = src.ss_state_abbreviation,
