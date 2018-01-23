@@ -38,9 +38,9 @@ class GeocodeRecords
           WHEN src.ss_primary_number IS NULL THEN NULL
           WHEN LENGTH(src.ss_primary_number) > 8 THEN NULL
           WHEN src.ss_primary_number ~ '\\A\\d+\\Z' THEN src.ss_primary_number::int
-          WHEN src.ss_primary_number ~ '/' THEN (regexp_matches(src.ss_primary_number, '(\\d+)'))[1]::int
+          WHEN src.ss_primary_number ~ '/' THEN (SELECT regexp_matches(src.ss_primary_number, '(\\d+)'))[1]::int
           WHEN src.ss_primary_number ~ '-' THEN (SELECT ROUND(AVG(v)) FROM unnest(array_remove(regexp_split_to_array(src.ss_primary_number, '\\D+'), '')::int[]) v)
-          ELSE (regexp_matches(src.ss_primary_number, '(\\d+)'))[1]::int
+          ELSE (SELECT regexp_matches(src.ss_primary_number, '(\\d+)'))[1]::int
         END,
         unit_number = src.ss_secondary_number,
         city = COALESCE(src.ss_default_city_name, src.ss_city_name),
