@@ -43,17 +43,20 @@ class GeocodeRecords
   # optional
   attr_reader :include_invalid
   attr_reader :subquery
+  attr_reader :num
 
    def initialize(
     database_url:,
     table_name:,
     subquery: nil,
-    include_invalid: nil
+    include_invalid: false,
+    num: 1
   )
     @database_url = database_url
     @table_name = table_name
     @subquery = subquery
     @include_invalid = include_invalid
+    @num = num
   end
   
   def perform
@@ -71,7 +74,8 @@ class GeocodeRecords
         database_url: database_url,
         table_name: table_name,
         subquery: subquery,
-        glob: glob
+        glob: glob,
+        num: num,
       ).perform
       unless File.size(ungeocoded_path) > 32
         return
@@ -79,12 +83,14 @@ class GeocodeRecords
       geocoded_path = GeocodeCsv.new(
         path: ungeocoded_path,
         glob: glob,
-        include_invalid: include_invalid
+        include_invalid: include_invalid,
+        num: num,
       ).perform
       UpdateTableFromCsv.new(
         database_url: database_url,
         table_name: table_name,
-        path: geocoded_path
+        path: geocoded_path,
+        num: num,
       ).perform
     ensure
       FileUtils.rm_f geocoded_path if geocoded_path

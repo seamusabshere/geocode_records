@@ -33,8 +33,8 @@ class GeocodeRecords
     UPDATE_TABLE_SQL = (<<-SQL).gsub('      ', '').freeze
       UPDATE $TABLE_NAME AS target
       SET
-        house_number_and_street = src.ss_delivery_line_1,
-        house_number = CASE
+        house_number_and_street$NUM_SUFFIX = src.ss_delivery_line_1,
+        house_number$NUM_SUFFIX = CASE
           WHEN src.ss_primary_number IS NULL THEN NULL
           WHEN LENGTH(src.ss_primary_number) > 8 THEN NULL
           WHEN src.ss_primary_number ~ '\\A\\d+\\Z' THEN src.ss_primary_number::int
@@ -42,12 +42,12 @@ class GeocodeRecords
           WHEN src.ss_primary_number ~ '-' THEN (SELECT ROUND(AVG(v)) FROM unnest(array_remove(regexp_split_to_array(src.ss_primary_number, '\\D+'), '')::int[]) v)
           ELSE (SELECT regexp_matches(src.ss_primary_number, '(\\d+)'))[1]::int
         END,
-        unit_number = src.ss_secondary_number,
-        city = COALESCE(src.ss_default_city_name, src.ss_city_name),
-        state = src.ss_state_abbreviation,
-        postcode = src.ss_zipcode,
-        latitude = src.ss_latitude,
-        longitude = src.ss_longitude
+        unit_number$NUM_SUFFIX = src.ss_secondary_number,
+        city$NUM_SUFFIX = COALESCE(src.ss_default_city_name, src.ss_city_name),
+        state$NUM_SUFFIX = src.ss_state_abbreviation,
+        postcode$NUM_SUFFIX = src.ss_zipcode,
+        latitude$NUM_SUFFIX = src.ss_latitude,
+        longitude$NUM_SUFFIX = src.ss_longitude
       FROM $TMP_TABLE_NAME AS src
       WHERE
             target.id = src.id
@@ -57,15 +57,18 @@ class GeocodeRecords
     attr_reader :database_url
     attr_reader :table_name
     attr_reader :path
+    attr_reader :num
 
     def initialize(
       database_url:,
       table_name:,
-      path:
+      path:,
+      num:
     )
       @database_url = database_url
       @table_name = table_name
       @path = path
+      @num = num
     end
 
     def perform
@@ -84,7 +87,7 @@ class GeocodeRecords
       memo = "geocode_records_#{table_name}_#{rand(999999)}".gsub(/[^a-z0-9_]/i, '')
       GeocodeRecords.psql(
         database_url,
-        CREATE_TABLE_SQL.sub('$TMP_TABLE_NAME', memo)
+        CREATE_TABLE_SQL.gsub('$TMP_TABLE_NAME', memo)
       )
       memo
     end
@@ -103,14 +106,15 @@ class GeocodeRecords
     def load_csv_into_tmp_table(path:, table_name:)
       GeocodeRecords.psql(
         database_url,
-        COPY_SQL.sub('$TMP_TABLE_NAME', table_name).sub('$PATH', path)
+        COPY_SQL.gsub('$TMP_TABLE_NAME', table_name).gsub('$PATH', path)
       )
     end
 
     def update_original_table(tmp_table_name)
+      num_suffix = (num == 1 ? '' : num.to_s)
       GeocodeRecords.psql(
         database_url,
-        UPDATE_TABLE_SQL.sub('$TMP_TABLE_NAME', tmp_table_name).sub('$TABLE_NAME', table_name)
+        UPDATE_TABLE_SQL.gsub('$TMP_TABLE_NAME', tmp_table_name).gsub('$TABLE_NAME', table_name).gsub('$NUM_SUFFIX', num_suffix)
       )
     end
 

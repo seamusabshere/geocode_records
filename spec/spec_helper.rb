@@ -30,6 +30,15 @@ unless ENV['FAST'] == 'true'
       postcode text,
       latitude float,
       longitude float,
+      glob2 text,
+      house_number_and_street2 text,
+      house_number2 int,
+      unit_number2 text,
+      city2 text,
+      state2 text,
+      postcode2 text,
+      latitude2 float,
+      longitude2 float,
       foo text
     )
   SQL

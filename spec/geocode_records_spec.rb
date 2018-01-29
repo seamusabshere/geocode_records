@@ -8,6 +8,15 @@ describe GeocodeRecords do
     subject
     home.reload
     expect(home.house_number_and_street).to eq('1038 E Dayton St')
+    expect(home.latitude).to be_present
+  end
+
+  it "geocodes addr 2" do
+    home = Home.create! house_number_and_street2: '1038 e deyton st', postcode2: '53703'
+    GeocodeRecords.new(database_url: ENV.fetch('DATABASE_URL'), table_name: 'homes', num: 2).perform
+    home.reload
+    expect(home.house_number_and_street2).to eq('1038 E Dayton St')
+    expect(home.latitude2).to be_present
   end
 
   it "geocodes quoted table name" do
@@ -25,6 +34,14 @@ describe GeocodeRecords do
     expect(home.postcode).to eq('53703')
   end
 
+  it "geocodes glob2" do
+    home = Home.create! glob2: '1038 e dayton st, madison, wi 53703'
+    GeocodeRecords.new(database_url: ENV.fetch('DATABASE_URL'), table_name: 'homes', num: 2).perform
+    home.reload
+    expect(home.house_number_and_street2).to eq('1038 E Dayton St')
+    expect(home.postcode2).to eq('53703')
+  end
+
   it "geocodes by sql" do
     home = Home.create! house_number_and_street: '1038 e deyton st', postcode: '53703', foo: 'bar'
     home_ignored = Home.create! house_number_and_street: '1038 e deyton st', postcode: '53703'
@@ -33,6 +50,16 @@ describe GeocodeRecords do
     home_ignored.reload
     expect(home.latitude).to be_present
     expect(home_ignored.latitude).to be_nil
+  end
+
+  it "geocodes by sql num 2" do
+    home = Home.create! house_number_and_street2: '1038 e deyton st', postcode2: '53703', foo: 'bar'
+    home_ignored = Home.create! house_number_and_street2: '1038 e deyton st', postcode2: '53703'
+    GeocodeRecords.new(database_url: ENV.fetch('DATABASE_URL'), table_name: 'homes', subquery: %{SELECT * FROM homes WHERE foo = 'bar'}, num: 2).perform  
+    home.reload
+    home_ignored.reload
+    expect(home.latitude2).to be_present
+    expect(home_ignored.latitude2).to be_nil
   end
 
   it "doesn't break on float-format postcode" do

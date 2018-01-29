@@ -5,6 +5,7 @@ class GeocodeRecords
     attr_reader :path
     attr_reader :glob
     attr_reader :include_invalid
+    attr_reader :num
 
     REQUIRED_SMARTYSTREETS_VERSION = Gem::Version.new('1.8.2')
     COLUMN_DEFINITION = {
@@ -26,11 +27,13 @@ class GeocodeRecords
     def initialize(
       path:,
       glob:,
-      include_invalid:
+      include_invalid:,
+      num:
     )
       @path = path
       @glob = glob
       @include_invalid = include_invalid
+      @num = num
     end
 
     def perform
@@ -58,13 +61,18 @@ class GeocodeRecords
     private
 
     def input_map
-      @input_map ||= if glob
-        { 'street' => 'glob' }
-      else
-        {
-          'street' => 'house_number_and_street',
-          'zipcode' => 'postcode',
-        }
+      @input_map ||= begin
+        num_suffix = (num == 1 ? '' : num)
+        if glob
+          { 'street' => "glob#{num_suffix}" }
+        else
+          {
+            'street' => "house_number_and_street#{num_suffix}",
+            'zipcode' => "postcode#{num_suffix}",
+            'city' => "city#{num_suffix}",
+            'state' => "state#{num_suffix}",
+          }
+        end
       end
     end
 
