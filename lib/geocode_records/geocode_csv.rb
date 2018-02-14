@@ -16,7 +16,8 @@ class GeocodeRecords
         city_name: true,
         default_city_name: true,
         state_abbreviation: true,
-        zipcode: true
+        zipcode: true,
+        plus4_code: true,
       },
       metadata: {
         latitude: true,

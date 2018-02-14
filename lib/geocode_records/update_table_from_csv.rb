@@ -9,6 +9,7 @@ class GeocodeRecords
         ss_city_name text,
         ss_state_abbreviation text,
         ss_zipcode text,
+        ss_plus4_code text,
         ss_latitude float,
         ss_longitude float,
         ss_default_city_name text
@@ -23,6 +24,7 @@ class GeocodeRecords
       ss_city_name
       ss_state_abbreviation
       ss_zipcode
+      ss_plus4_code
       ss_latitude
       ss_longitude
       ss_default_city_name
@@ -46,6 +48,7 @@ class GeocodeRecords
         city$NUM_SUFFIX = COALESCE(src.ss_default_city_name, src.ss_city_name),
         state$NUM_SUFFIX = src.ss_state_abbreviation,
         postcode$NUM_SUFFIX = src.ss_zipcode,
+        postcode_zip4$NUM_SUFFIX = src.ss_plus4_code,
         latitude$NUM_SUFFIX = src.ss_latitude,
         longitude$NUM_SUFFIX = src.ss_longitude
       FROM $TMP_TABLE_NAME AS src

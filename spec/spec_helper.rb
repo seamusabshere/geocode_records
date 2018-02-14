@@ -28,6 +28,7 @@ unless ENV['FAST'] == 'true'
       city text,
       state text,
       postcode text,
+      postcode_zip4 text,
       latitude float,
       longitude float,
       glob2 text,
@@ -37,6 +38,7 @@ unless ENV['FAST'] == 'true'
       city2 text,
       state2 text,
       postcode2 text,
+      postcode_zip42 text,
       latitude2 float,
       longitude2 float,
       foo text
