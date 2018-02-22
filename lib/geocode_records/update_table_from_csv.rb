@@ -3,6 +3,10 @@ class GeocodeRecords
     CREATE_TABLE_SQL = (<<-SQL).gsub('      ', '').freeze
       CREATE TABLE $TMP_TABLE_NAME (
         id uuid primary key,
+        ss_street_predirection text,
+        ss_street_name text,
+        ss_street_suffix text,
+        ss_street_postdirection text,
         ss_delivery_line_1 text,
         ss_primary_number text,
         ss_secondary_number text,
@@ -18,6 +22,10 @@ class GeocodeRecords
 
     DESIRED_COLUMNS = %w{
       id
+      ss_street_predirection
+      ss_street_name
+      ss_street_suffix
+      ss_street_postdirection
       ss_delivery_line_1
       ss_primary_number
       ss_secondary_number
@@ -35,6 +43,7 @@ class GeocodeRecords
     UPDATE_TABLE_SQL = (<<-SQL).gsub('      ', '').freeze
       UPDATE $TABLE_NAME AS target
       SET
+        street$NUM_SUFFIX = concat_ws(' ', src.ss_street_predirection, src.ss_street_name, src.ss_street_suffix, src.ss_street_postdirection),
         house_number_and_street$NUM_SUFFIX = src.ss_delivery_line_1,
         house_number$NUM_SUFFIX = CASE
           WHEN src.ss_primary_number IS NULL THEN NULL

@@ -11,6 +11,10 @@ class GeocodeRecords
     COLUMN_DEFINITION = {
       delivery_line_1: true,
       components: {
+        street_predirection: true,
+        street_name: true,
+        street_suffix: true,
+        street_postdirection: true,
         primary_number: true,
         secondary_number: true,
         city_name: true,

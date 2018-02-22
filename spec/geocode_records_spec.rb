@@ -4,18 +4,24 @@ describe GeocodeRecords do
   subject { GeocodeRecords.new(database_url: ENV.fetch('DATABASE_URL'), table_name: 'homes').perform }
   
   it "geocodes" do
-    home = Home.create! house_number_and_street: '1038 e deyton st', postcode: '53703'
+    home = Home.create! house_number_and_street: '123 n blount st apt 403', postcode: '53703'
     subject
     home.reload
-    expect(home.house_number_and_street).to eq('1038 E Dayton St')
+    expect(home.house_number_and_street).to eq('123 N Blount St Unit 403')
+    expect(home.street).to eq('N Blount St')
+    expect(home.unit_number).to eq('403')
+    expect(home.house_number).to eq(123)
     expect(home.latitude).to be_present
   end
 
   it "geocodes addr 2" do
-    home = Home.create! house_number_and_street2: '1038 e deyton st', postcode2: '53703'
+    home = Home.create! house_number_and_street2: '123 n blount st apt 403', postcode2: '53703'
     GeocodeRecords.new(database_url: ENV.fetch('DATABASE_URL'), table_name: 'homes', num: 2).perform
     home.reload
-    expect(home.house_number_and_street2).to eq('1038 E Dayton St')
+    expect(home.house_number_and_street2).to eq('123 N Blount St Unit 403')
+    expect(home.street2).to eq('N Blount St')
+    expect(home.unit_number2).to eq('403')
+    expect(home.house_number2).to eq(123)
     expect(home.latitude2).to be_present
   end
 
