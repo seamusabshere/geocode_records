@@ -12,6 +12,7 @@ describe GeocodeRecords do
     expect(home.unit_number).to eq('403')
     expect(home.house_number).to eq(123)
     expect(home.latitude).to be_present
+    expect(home.rdi).to eq('Residential')
   end
 
   it "geocodes addr 2" do
@@ -23,6 +24,7 @@ describe GeocodeRecords do
     expect(home.unit_number2).to eq('403')
     expect(home.house_number2).to eq(123)
     expect(home.latitude2).to be_present
+    expect(home.rdi2).to eq('Residential')
   end
 
   it "geocodes quoted table name" do

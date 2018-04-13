@@ -25,7 +25,8 @@ class GeocodeRecords
       },
       metadata: {
         latitude: true,
-        longitude: true
+        longitude: true,
+        rdi: true,
       }
     }
 

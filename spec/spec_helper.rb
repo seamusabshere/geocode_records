@@ -43,6 +43,8 @@ unless ENV['FAST'] == 'true'
       postcode_zip42 text,
       latitude2 float,
       longitude2 float,
+      rdi text,
+      rdi2 text,
       foo text
     )
   SQL

@@ -16,7 +16,8 @@ class GeocodeRecords
         ss_plus4_code text,
         ss_latitude float,
         ss_longitude float,
-        ss_default_city_name text
+        ss_default_city_name text,
+        ss_rdi text
       )
     SQL
 
@@ -36,6 +37,7 @@ class GeocodeRecords
       ss_latitude
       ss_longitude
       ss_default_city_name
+      ss_rdi
     }
 
     COPY_SQL = "\\copy $TMP_TABLE_NAME (#{DESIRED_COLUMNS.join(',')}) FROM '$PATH' DELIMITER ',' CSV HEADER"
@@ -59,7 +61,8 @@ class GeocodeRecords
         postcode$NUM_SUFFIX = src.ss_zipcode,
         postcode_zip4$NUM_SUFFIX = src.ss_plus4_code,
         latitude$NUM_SUFFIX = src.ss_latitude,
-        longitude$NUM_SUFFIX = src.ss_longitude
+        longitude$NUM_SUFFIX = src.ss_longitude,
+        rdi$NUM_SUFFIX = src.ss_rdi
       FROM $TMP_TABLE_NAME AS src
       WHERE
             target.id = src.id
