@@ -15,14 +15,6 @@ class GeocodeRecords
       Dir::Tmpname.create(hint[0,64].delete('"').gsub(/\W/,'_').squeeze) {}
     end
 
-    def system(*args)
-      result = Kernel.system(*args)
-      unless result
-        raise "failed command:\n#{Shellwords.join args}"
-      end
-      nil
-    end
-
     def psql(database_url, sql)
       system(
         'psql',
@@ -33,7 +25,7 @@ class GeocodeRecords
         '--no-psqlrc',
         '--pset', 'pager=off',
         '--command', sql
-      )
+      ) or raise("psql failed")
     end
   end
 

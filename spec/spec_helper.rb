@@ -7,7 +7,7 @@ dbname = 'geocode_records_test'
 ENV['DATABASE_URL'] = "postgresql://127.0.0.1:#{ENV['PGPORT'] || 5432}/#{dbname}"
 
 unless ENV['FAST'] == 'true'
-  GeocodeRecords.system('createdb', ENV.fetch('DATABASE_URL')) rescue nil
+  system('createdb', ENV.fetch('DATABASE_URL')) rescue nil
   GeocodeRecords.psql(
     ENV.fetch('DATABASE_URL'),
     'CREATE EXTENSION IF NOT EXISTS postgis'

@@ -109,12 +109,12 @@ class GeocodeRecords
 
     def strip_csv
       memo = GeocodeRecords.new_tmp_path('stripped')
-      GeocodeRecords.system(
+      system(
         'xsv',
         'select', DESIRED_COLUMNS.join(','),
         path,
         out: memo
-      )
+      ) or raise("xsv failed")
       memo
     end
 

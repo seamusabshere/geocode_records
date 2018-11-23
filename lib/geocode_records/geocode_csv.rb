@@ -60,7 +60,7 @@ class GeocodeRecords
       input_map.each do |ss, local|
         args += [ "--#{ss}-col", local.to_s ]
       end
-      GeocodeRecords.system(*args)
+      system(*args) or raise("smartystreets failed")
       memo
     end
 
