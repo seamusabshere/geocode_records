@@ -36,19 +36,22 @@ class GeocodeRecords
   attr_reader :include_invalid
   attr_reader :subquery
   attr_reader :num
+  attr_reader :clean
 
    def initialize(
     database_url:,
     table_name:,
     subquery: nil,
     include_invalid: false,
-    num: 1
+    num: 1,
+    clean: true
   )
     @database_url = database_url
     @table_name = table_name
     @subquery = subquery
     @include_invalid = include_invalid
     @num = num
+    @clean = clean
   end
   
   def perform
@@ -85,8 +88,10 @@ class GeocodeRecords
         num: num,
       ).perform
     ensure
-      FileUtils.rm_f geocoded_path if geocoded_path
-      FileUtils.rm_f ungeocoded_path if ungeocoded_path
+      if clean
+        FileUtils.rm_f geocoded_path if geocoded_path
+        FileUtils.rm_f ungeocoded_path if ungeocoded_path
+      end
     end
   end
 end
